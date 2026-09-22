@@ -32,8 +32,11 @@ export default function CustomizePage() {
             <h1 className="mt-4 font-serif text-[clamp(2.75rem,6.5vw,5.5rem)] font-semibold uppercase leading-none tracking-[0.12em] text-cream">
               Customize <span className="text-gold-500">Your Perfume</span>
             </h1>
-            <p className="mt-4 font-serif text-2xl italic tracking-wide text-cream/90 sm:text-3xl">
-              Layer it. Name it. Wear it.
+            <p className="mt-5 font-serif text-2xl italic tracking-wide text-cream/90 sm:text-3xl">
+              It&apos;s not about the smell — it&apos;s about the <span className="text-gold-400">aura</span>.
+            </p>
+            <p className="mt-4 text-[11px] font-medium uppercase tracking-[0.4em] text-smoke sm:text-xs">
+              Layer it · Name it · Wear it
             </p>
           </div>
         </Container>

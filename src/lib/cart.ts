@@ -125,6 +125,7 @@ export type CartItem = CartLine & { product: Product; lineTotal: number };
 const customProduct = (custom: CustomBlend): Product => ({
   slug: CUSTOM_SLUG,
   name: `Custom ${TOTAL_ML} ml Blend`,
+  category: "perfume",
   notes: custom.layers.map((layer) => layer.name),
   price: CUSTOM_BOTTLE_PRICE,
   image: "/images/product-5.png",

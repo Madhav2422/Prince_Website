@@ -1,3 +1,4 @@
+import { CustomizeTeaser } from "@/components/home/CustomizeTeaser";
 import { Features } from "@/components/home/Features";
 import { GoodScentsBanner } from "@/components/home/GoodScentsBanner";
 import { Hero } from "@/components/home/Hero";
@@ -9,6 +10,7 @@ export default function HomePage() {
       <Hero />
       <Features />
       <OurStory />
+      <CustomizeTeaser />
       <GoodScentsBanner />
     </>
   );

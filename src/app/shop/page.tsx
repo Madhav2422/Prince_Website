@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { CategoryTabs } from "@/components/shop/CategoryTabs";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { Container } from "@/components/ui/Container";
+import { byCategory } from "@/data/products";
 
 export const metadata: Metadata = {
   title: "Shop",
@@ -14,7 +16,6 @@ export default function ShopPage() {
   return (
     <>
       <section aria-label="Shop" className="relative isolate overflow-hidden bg-ink-950">
-        {/* TODO: swap for the dedicated shop banner photo once available */}
         <Image
           src="/images/About_Us_bg_image.jpg"
           alt=""
@@ -59,9 +60,12 @@ export default function ShopPage() {
         </Container>
       </section>
 
-      <section aria-label="All fragrances" className="bg-ink-900">
+      <section aria-label="Perfumes" className="bg-ink-900">
         <Container className="py-12 lg:py-16">
-          <ProductGrid />
+          <div className="mb-10 border-b border-ink-700">
+            <CategoryTabs active="perfume" />
+          </div>
+          <ProductGrid products={byCategory("perfume")} heading="All Perfumes" />
         </Container>
       </section>
     </>

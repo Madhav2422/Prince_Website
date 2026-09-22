@@ -4,53 +4,127 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Check, Plus, RotateCcw, ShoppingBag, X } from "lucide-react";
 import { formatPrice } from "@/data/products";
-import { CUSTOM_BOTTLE_PRICE, SLOT_COUNT, SLOT_ML, TOTAL_ML, getScent, scents } from "@/data/customize";
+import {
+  CUSTOM_BOTTLE_PRICE,
+  SLOT_COUNT,
+  SLOT_ML,
+  TOTAL_ML,
+  getScent,
+  scents,
+} from "@/data/customize";
 import { addCustomBlendToCart, type CustomBlend } from "@/lib/cart";
-import { BottleVisual } from "./BottleVisual";
-
-type Layer = { key: number; slug: string };
+import {
+  BottleVisual,
+  CAP_OPEN_MS,
+  POUR_GAP_MS,
+  POUR_TOTAL_MS,
+  type BottleLayer,
+  type CapState,
+  type Pour,
+} from "./BottleVisual";
 
 const MAX_ENGRAVING = 14;
+/** The cap reseals after this long with no new scent added. */
+const CLOSE_AFTER_MS = 5000;
+
+type Timer = ReturnType<typeof setTimeout>;
 
 export function Customizer() {
-  const [layers, setLayers] = useState<Layer[]>([]);
+  const [layers, setLayers] = useState<BottleLayer[]>([]);
+  const [pours, setPours] = useState<Pour[]>([]);
+  const [cap, setCap] = useState<CapState>("idle");
+  const [openCount, setOpenCount] = useState(0);
   const [engraving, setEngraving] = useState("");
-  const [pouring, setPouring] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
-  const nextKey = useRef(0);
-  const pourTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const addedTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  useEffect(
-    () => () => {
-      clearTimeout(pourTimer.current);
+  const nextKey = useRef(0);
+  /** Layer count updated synchronously, so rapid clicks can't overfill or share a fall target. */
+  const layerCount = useRef(0);
+  const capIsOpen = useRef(false);
+  /** Timestamp when the next queued pour may start. */
+  const pourFreeAt = useRef(0);
+  const closeTimer = useRef<Timer>(undefined);
+  const addedTimer = useRef<Timer>(undefined);
+  const pourTimers = useRef(new Set<Timer>());
+
+  useEffect(() => {
+    const timers = pourTimers.current;
+    return () => {
+      timers.forEach(clearTimeout);
+      clearTimeout(closeTimer.current);
       clearTimeout(addedTimer.current);
-    },
-    [],
-  );
+    };
+  }, []);
 
   const filledMl = layers.length * SLOT_ML;
   const isFull = layers.length >= SLOT_COUNT;
 
-  function addLayer(slug: string) {
-    if (isFull) return;
-    setLayers((current) => [...current, { key: nextKey.current++, slug }]);
-    setPouring(slug);
-    clearTimeout(pourTimer.current);
-    pourTimer.current = setTimeout(() => setPouring(null), 650);
+  /** `now` is the click event timestamp (same clock as performance.now). */
+  function addLayer(slug: string, now: number) {
+    if (layerCount.current >= SLOT_COUNT) return;
+
+    // Unscrew the cap first if it is sealed; the pour waits for it.
+    const capDelay = capIsOpen.current ? 0 : CAP_OPEN_MS;
+    if (!capIsOpen.current) {
+      capIsOpen.current = true;
+      setCap("open");
+      setOpenCount((count) => count + 1);
+    }
+
+    // Queue behind any pour still in flight so each drop gets its own moment.
+    const start = Math.max(now + capDelay, pourFreeAt.current);
+    pourFreeAt.current = start + POUR_GAP_MS;
+    const delay = Math.round(start - now);
+
+    const key = nextKey.current++;
+    const index = layerCount.current++;
+    setLayers((current) => [...current, { key, slug, delay }]);
+    setPours((current) => [...current, { key, slug, delay, index }]);
+
+    const cleanup = setTimeout(
+      () => {
+        pourTimers.current.delete(cleanup);
+        setPours((current) => current.filter((pour) => pour.key !== key));
+      },
+      delay + POUR_TOTAL_MS + 100,
+    );
+    pourTimers.current.add(cleanup);
+
+    // Reseal once the bottle has been left alone for a while after the last pour.
+    clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(
+      () => {
+        capIsOpen.current = false;
+        setCap("closed");
+      },
+      delay + POUR_TOTAL_MS + CLOSE_AFTER_MS,
+    );
   }
 
-  const removeLayer = (key: number) => setLayers((current) => current.filter((layer) => layer.key !== key));
+  function removeLayer(key: number) {
+    layerCount.current = Math.max(0, layerCount.current - 1);
+    setLayers((current) => current.filter((layer) => layer.key !== key));
+  }
+
+  function resetLayers() {
+    layerCount.current = 0;
+    setLayers([]);
+  }
 
   function handleAddToCart() {
     if (!isFull) return;
     // Merge repeated scents so the order reads "Jazz Club 10 ml" rather than two separate 5 ml lines.
     const totals = new Map<string, number>();
-    for (const layer of layers) totals.set(layer.slug, (totals.get(layer.slug) ?? 0) + SLOT_ML);
+    for (const layer of layers)
+      totals.set(layer.slug, (totals.get(layer.slug) ?? 0) + SLOT_ML);
 
     const blend: CustomBlend = {
       engraving: engraving.trim(),
-      layers: [...totals].map(([slug, ml]) => ({ slug, name: getScent(slug)?.name ?? slug, ml })),
+      layers: [...totals].map(([slug, ml]) => ({
+        slug,
+        name: getScent(slug)?.name ?? slug,
+        ml,
+      })),
     };
 
     addCustomBlendToCart(blend);
@@ -64,7 +138,13 @@ export function Customizer() {
       {/* Bottle preview */}
       <div className="lg:sticky lg:top-28 lg:h-fit">
         <div className="relative mx-auto flex h-[420px] max-w-[340px] items-center justify-center sm:h-[480px]">
-          <BottleVisual layers={layers} engraving={engraving.trim()} pouring={pouring} />
+          <BottleVisual
+            layers={layers}
+            pours={pours}
+            cap={cap}
+            openCount={openCount}
+            engraving={engraving.trim()}
+          />
         </div>
 
         <div className="mx-auto mt-6 max-w-[340px]">
@@ -90,13 +170,16 @@ export function Customizer() {
       <div>
         <section aria-labelledby="cz-scents">
           <div className="flex items-center justify-between gap-4">
-            <h2 id="cz-scents" className="text-xs font-medium uppercase tracking-[0.35em] text-gold-500">
+            <h2
+              id="cz-scents"
+              className="text-xs font-medium uppercase tracking-[0.35em] text-gold-500"
+            >
               1 · Choose your scents
             </h2>
             {layers.length > 0 && (
               <button
                 type="button"
-                onClick={() => setLayers([])}
+                onClick={resetLayers}
                 className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-smoke transition-colors hover:text-gold-500"
               >
                 <RotateCcw aria-hidden className="size-3.5" strokeWidth={1.8} />
@@ -105,17 +188,20 @@ export function Customizer() {
             )}
           </div>
           <p className="mt-3 text-sm leading-relaxed text-mist">
-            Every tap adds {SLOT_ML} ml to the bottle. Pick the same scent twice to make it stronger.
+            Every tap adds {SLOT_ML} ml to the bottle. Pick the same scent twice
+            to make it stronger.
           </p>
 
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
             {scents.map((scent) => {
-              const used = layers.filter((layer) => layer.slug === scent.slug).length;
+              const used = layers.filter(
+                (layer) => layer.slug === scent.slug,
+              ).length;
               return (
                 <li key={scent.slug}>
                   <button
                     type="button"
-                    onClick={() => addLayer(scent.slug)}
+                    onClick={(event) => addLayer(scent.slug, event.timeStamp)}
                     disabled={isFull}
                     aria-label={`Add ${SLOT_ML} ml of ${scent.name}`}
                     className="group flex w-full items-center gap-3 border border-ink-600/70 bg-ink-950/50 px-4 py-3 text-left transition-colors duration-300 hover:border-gold-500/60 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-ink-600/70"
@@ -123,18 +209,27 @@ export function Customizer() {
                     <span
                       aria-hidden
                       className="size-8 shrink-0 rounded-full ring-1 ring-white/15 transition-transform duration-300 group-hover:scale-110 group-active:scale-95"
-                      style={{ background: `linear-gradient(160deg, ${scent.to}, ${scent.from})` }}
+                      style={{
+                        background: `linear-gradient(160deg, ${scent.to}, ${scent.from})`,
+                      }}
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm text-cream">{scent.name}</span>
-                      <span className="block truncate text-[11px] tracking-wide text-smoke">{scent.note}</span>
+                      <span className="block truncate text-sm text-cream">
+                        {scent.name}
+                      </span>
+                      <span className="block truncate text-[11px] tracking-wide text-smoke">
+                        {scent.note}
+                      </span>
                     </span>
                     {used > 0 ? (
                       <span className="shrink-0 text-[11px] font-semibold tracking-wider text-gold-500">
                         {used * SLOT_ML}ml
                       </span>
                     ) : (
-                      <Plus aria-hidden className="size-4 shrink-0 text-smoke transition-colors group-hover:text-gold-500" />
+                      <Plus
+                        aria-hidden
+                        className="size-4 shrink-0 text-smoke transition-colors group-hover:text-gold-500"
+                      />
                     )}
                   </button>
                 </li>
@@ -148,17 +243,26 @@ export function Customizer() {
               const layer = layers[i];
               const scent = layer ? getScent(layer.slug) : null;
               return (
-                <li key={i} className="flex-1 basis-[calc(33.333%-0.5rem)] sm:basis-[calc(16.666%-0.5rem)]">
+                <li
+                  key={i}
+                  className="flex-1 basis-[calc(33.333%-0.5rem)] sm:basis-[calc(16.666%-0.5rem)]"
+                >
                   {layer && scent ? (
                     <button
                       type="button"
                       onClick={() => removeLayer(layer.key)}
                       aria-label={`Remove ${scent.name} layer ${i + 1}`}
                       className="group relative flex h-16 w-full flex-col items-center justify-center gap-1 border border-ink-600 px-1 text-center transition-colors hover:border-red-400/70"
-                      style={{ background: `linear-gradient(180deg, ${scent.to}22, ${scent.from}44)` }}
+                      style={{
+                        background: `linear-gradient(180deg, ${scent.to}22, ${scent.from}44)`,
+                      }}
                     >
-                      <span className="line-clamp-2 text-[10px] leading-tight text-cream">{scent.name}</span>
-                      <span className="text-[10px] font-semibold text-gold-400">{SLOT_ML}ml</span>
+                      <span className="line-clamp-2 text-[10px] leading-tight text-cream">
+                        {scent.name}
+                      </span>
+                      <span className="text-[10px] font-semibold text-gold-400">
+                        {SLOT_ML}ml
+                      </span>
                       <X
                         aria-hidden
                         className="absolute right-1 top-1 size-3 text-cream/0 transition-colors group-hover:text-red-300"
@@ -176,11 +280,15 @@ export function Customizer() {
         </section>
 
         <section aria-labelledby="cz-engraving" className="mt-12">
-          <h2 id="cz-engraving" className="text-xs font-medium uppercase tracking-[0.35em] text-gold-500">
+          <h2
+            id="cz-engraving"
+            className="text-xs font-medium uppercase tracking-[0.35em] text-gold-500"
+          >
             2 · Add your name
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-mist">
-            Optional — we engrave it on the bottle label. Leave it blank for a plain bottle.
+            Optional — we engrave it on the bottle label. Leave it blank for a
+            plain bottle.
           </p>
           <label htmlFor="engraving" className="sr-only">
             Name to engrave
@@ -189,7 +297,9 @@ export function Customizer() {
             <input
               id="engraving"
               value={engraving}
-              onChange={(e) => setEngraving(e.target.value.slice(0, MAX_ENGRAVING))}
+              onChange={(e) =>
+                setEngraving(e.target.value.slice(0, MAX_ENGRAVING))
+              }
               placeholder="e.g. Madhav"
               maxLength={MAX_ENGRAVING}
               className="w-full max-w-xs border border-ink-600 bg-ink-950/60 px-4 py-3 text-sm text-cream placeholder:text-smoke/70 transition-colors duration-300 focus:border-gold-500 focus:outline-none"
@@ -200,14 +310,21 @@ export function Customizer() {
           </div>
         </section>
 
-        <section aria-labelledby="cz-order" className="mt-12 border-t border-ink-700 pt-8">
+        <section
+          aria-labelledby="cz-order"
+          className="mt-12 border-t border-ink-700 pt-8"
+        >
           <h2 id="cz-order" className="sr-only">
             3 · Add to cart
           </h2>
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.25em] text-smoke">Your {TOTAL_ML} ml bottle</p>
-              <p className="mt-2 font-serif text-3xl text-cream">{formatPrice(CUSTOM_BOTTLE_PRICE)}</p>
+              <p className="text-[11px] uppercase tracking-[0.25em] text-smoke">
+                Your {TOTAL_ML} ml bottle
+              </p>
+              <p className="mt-2 font-serif text-3xl text-cream">
+                {formatPrice(CUSTOM_BOTTLE_PRICE)}
+              </p>
             </div>
 
             <button
@@ -216,8 +333,16 @@ export function Customizer() {
               disabled={!isFull}
               className="inline-flex items-center gap-3 bg-gold-500 px-7 py-4 text-[13px] font-semibold uppercase tracking-[0.18em] text-ink-950 transition-colors duration-300 hover:bg-gold-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500 disabled:cursor-not-allowed disabled:bg-ink-700 disabled:text-smoke"
             >
-              {added ? <Check aria-hidden className="size-4" strokeWidth={3} /> : <ShoppingBag aria-hidden className="size-4" strokeWidth={2} />}
-              {added ? "Added to cart" : isFull ? "Add to cart" : `Fill ${TOTAL_ML - filledMl} ml more`}
+              {added ? (
+                <Check aria-hidden className="size-4" strokeWidth={3} />
+              ) : (
+                <ShoppingBag aria-hidden className="size-4" strokeWidth={2} />
+              )}
+              {added
+                ? "Added to cart"
+                : isFull
+                  ? "Add to cart"
+                  : `Fill ${TOTAL_ML - filledMl} ml more`}
             </button>
           </div>
 
@@ -225,7 +350,10 @@ export function Customizer() {
             {added && (
               <span className="text-gold-400">
                 Your bottle is in the cart.{" "}
-                <Link href="/cart" className="underline underline-offset-4 hover:text-gold-300">
+                <Link
+                  href="/cart"
+                  className="underline underline-offset-4 hover:text-gold-300"
+                >
                   View cart
                 </Link>
               </span>
