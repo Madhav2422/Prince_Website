@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import { Menu, Search, ShoppingBag, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Container } from "@/components/ui/Container";
 import { navLinks } from "@/data/navigation";
@@ -73,9 +73,6 @@ export function Navbar() {
           <button type="button" aria-label="Search" className={iconButton}>
             <Search className="size-5" strokeWidth={1.75} />
           </button>
-          <Link href="/account" aria-label="Account" className={`${iconButton} hidden sm:inline-flex`}>
-            <User className="size-5" strokeWidth={1.75} />
-          </Link>
           <Link href="/cart" aria-label={`Cart, ${cartCount} items`} className={`${iconButton} relative text-gold-500`}>
             <ShoppingBag className="size-5" strokeWidth={1.75} />
             <span
@@ -129,13 +126,7 @@ export function Navbar() {
                 );
               })}
               <li>
-                <Link
-                  href="/account"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-3 py-4 text-sm uppercase tracking-[0.2em] text-mist transition-colors hover:text-gold-500 sm:hidden"
-                >
-                  <User className="size-4" strokeWidth={1.75} /> Account
-                </Link>
+                
               </li>
             </ul>
           </Container>

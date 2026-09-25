@@ -135,9 +135,10 @@ export function Customizer() {
 
   return (
     <div className="grid gap-12 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-16">
-      {/* Bottle preview */}
-      <div className="lg:sticky lg:top-28 lg:h-fit">
-        <div className="relative mx-auto flex h-[420px] max-w-[340px] items-center justify-center sm:h-[480px]">
+      {/* Bottle preview — a compact sticky bar on mobile so the animation stays visible
+          while scrolling the scent list, and a tall sticky panel from lg up. */}
+      <div className="sticky top-20 z-20 -mx-5 flex items-center gap-3 border-b border-ink-700/60 bg-ink-950/95 px-5 py-3 backdrop-blur-sm sm:gap-5 sm:-mx-8 sm:px-8 lg:top-28 lg:z-auto lg:mx-0 lg:block lg:h-fit lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none">
+        <div className="relative flex h-60 w-45 shrink-0 items-center justify-center sm:h-72 sm:w-60 lg:mx-auto lg:h-[420px] lg:w-full lg:max-w-[340px] xl:h-[480px]">
           <BottleVisual
             layers={layers}
             pours={pours}
@@ -147,17 +148,17 @@ export function Customizer() {
           />
         </div>
 
-        <div className="mx-auto mt-6 max-w-[340px]">
-          <div className="flex items-baseline justify-between">
-            <p className="font-serif text-2xl text-cream">
+        <div className="min-w-0 flex-1 lg:mx-auto lg:mt-6 lg:max-w-[340px] lg:flex-none">
+          <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+            <p className="font-serif text-lg text-cream lg:text-2xl">
               {filledMl}
               <span className="text-mist"> / {TOTAL_ML} ml</span>
             </p>
-            <p className="text-[11px] uppercase tracking-[0.25em] text-smoke">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-smoke lg:text-[11px] lg:tracking-[0.25em]">
               {layers.length} / {SLOT_COUNT} layers
             </p>
           </div>
-          <div className="mt-3 h-1 w-full overflow-hidden bg-ink-700">
+          <div className="mt-2 h-1 w-full overflow-hidden bg-ink-700 lg:mt-3">
             <div
               className="h-full bg-gold-500 transition-[width] duration-700 ease-out"
               style={{ width: `${(layers.length / SLOT_COUNT) * 100}%` }}
@@ -237,8 +238,14 @@ export function Customizer() {
             })}
           </ul>
 
+          {layers.length > 0 && (
+            <p className="mt-6 text-[11px] uppercase tracking-[0.2em] text-smoke">
+              Tap a filled slot below to remove it.
+            </p>
+          )}
+
           {/* Slot strip */}
-          <ol className="mt-6 flex flex-wrap gap-2">
+          <ol className="mt-3 flex flex-wrap gap-2">
             {Array.from({ length: SLOT_COUNT }, (_, i) => {
               const layer = layers[i];
               const scent = layer ? getScent(layer.slug) : null;
@@ -263,10 +270,12 @@ export function Customizer() {
                       <span className="text-[10px] font-semibold text-gold-400">
                         {SLOT_ML}ml
                       </span>
-                      <X
+                      <span
                         aria-hidden
-                        className="absolute right-1 top-1 size-3 text-cream/0 transition-colors group-hover:text-red-300"
-                      />
+                        className="absolute -right-1.5 -top-1.5 grid size-4.5 place-items-center rounded-full bg-ink-950 text-cream/80 ring-1 ring-ink-600 transition-colors group-hover:bg-red-500/80 group-hover:text-cream group-hover:ring-red-400/70"
+                      >
+                        <X className="size-2.5" strokeWidth={2.5} />
+                      </span>
                     </button>
                   ) : (
                     <span className="flex h-16 w-full items-center justify-center border border-dashed border-ink-600 text-[10px] uppercase tracking-[0.15em] text-smoke/60">
