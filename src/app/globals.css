@@ -476,6 +476,124 @@
   .reveal-line.is-visible {
     transform: scaleX(1);
   }
+
+  /* ---------------- SoulfulScreens ---------------- */
+  /* Blinking record light */
+  .ss-rec {
+    animation: ss-rec 1.4s ease-in-out infinite;
+  }
+  @keyframes ss-rec {
+    50% {
+      opacity: 0.15;
+    }
+  }
+
+  /* Viewfinder brackets lock into place when their <Reveal> scrolls into view */
+  .ss-corner {
+    transition:
+      transform 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.35s,
+      opacity 0.6s ease 0.35s;
+  }
+  .reveal:not(.is-visible) .ss-corner {
+    transform: translate(var(--cx), var(--cy));
+    opacity: 0;
+  }
+
+  /* Film strip: two identical copies roll left, so -50% lands exactly on the start */
+  .ss-marquee {
+    animation: ss-marquee 38s linear infinite;
+  }
+  @keyframes ss-marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  .ss-sprockets {
+    --hole: rgb(255 255 255 / 0.16);
+    background-image:
+      repeating-linear-gradient(to right, var(--hole) 0 12px, transparent 12px 26px),
+      repeating-linear-gradient(to right, var(--hole) 0 12px, transparent 12px 26px);
+    background-size: 100% 6px;
+    background-position:
+      0 5px,
+      0 calc(100% - 5px);
+    background-repeat: no-repeat;
+  }
+
+  /* Spotlight that slowly sweeps across the SoulfulScreens hero */
+  .ss-beam {
+    background: conic-gradient(
+      at 50% -10%,
+      transparent 0 160deg,
+      rgb(245 193 48 / 0.1) 171deg,
+      rgb(255 255 255 / 0.07) 180deg,
+      rgb(245 193 48 / 0.1) 189deg,
+      transparent 200deg 360deg
+    );
+    transform-origin: 50% -10%;
+    animation: ss-beam 10s ease-in-out infinite alternate;
+  }
+  @keyframes ss-beam {
+    from {
+      transform: rotate(-9deg);
+    }
+    to {
+      transform: rotate(9deg);
+    }
+  }
+
+  /* Film grain */
+  .ss-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: ss-grain 0.9s steps(1) infinite;
+  }
+  @keyframes ss-grain {
+    0% {
+      transform: translate(0, 0);
+    }
+    25% {
+      transform: translate(-4%, 3%);
+    }
+    50% {
+      transform: translate(3%, -2%);
+    }
+    75% {
+      transform: translate(-2%, -4%);
+    }
+  }
+
+  /* Rings pulsing out of a play button */
+  .ss-pulse::before,
+  .ss-pulse::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 9999px;
+    border: 1px solid var(--color-gold-500);
+    animation: ss-pulse 2.6s ease-out infinite;
+  }
+  .ss-pulse::after {
+    animation-delay: 1.3s;
+  }
+  @keyframes ss-pulse {
+    from {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+    to {
+      transform: scale(1.8);
+      opacity: 0;
+    }
+  }
+
+  /* Clapperboard stick: held open, then snaps shut once its card has faded in */
+  .ss-clap {
+    transform-origin: left bottom;
+    transition: transform 0.35s cubic-bezier(0.55, 0, 1, 0.45) calc(var(--d, 0s) + 0.6s);
+  }
+  .reveal:not(.is-visible) .ss-clap {
+    transform: rotate(-16deg);
+  }
 }
 
 @layer base {

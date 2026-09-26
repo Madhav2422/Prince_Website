@@ -3,6 +3,7 @@ import { Features } from "@/components/home/Features";
 import { GoodScentsBanner } from "@/components/home/GoodScentsBanner";
 import { Hero } from "@/components/home/Hero";
 import { OurStory } from "@/components/home/OurStory";
+import { SoulfulScreensTeaser } from "@/components/home/SoulfulScreensTeaser";
 
 export default function HomePage() {
   return (
@@ -12,6 +13,7 @@ export default function HomePage() {
       <OurStory />
       <CustomizeTeaser />
       <GoodScentsBanner />
+      <SoulfulScreensTeaser />
     </>
   );
 }
