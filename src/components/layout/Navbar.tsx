@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, Search, ShoppingBag, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
@@ -14,12 +14,21 @@ const iconButton =
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { count: cartCount } = useCart();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    // Only touches React when the header actually flips between clear and solid, not on every scroll event.
+    let current = false;
+    const onScroll = () => {
+      const next = window.scrollY > 24;
+      if (next !== current) {
+        current = next;
+        setScrolled(next);
+      }
+    };
     // Also check once on mount — the page may load already scrolled (e.g. after a refresh).
     const frame = requestAnimationFrame(onScroll);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -28,6 +37,12 @@ export function Navbar() {
       window.removeEventListener("scroll", onScroll);
     };
   }, []);
+
+  // Fetch every page in the menu up front, so tapping one lands instantly instead of waiting on the network.
+  useEffect(() => {
+    navLinks.forEach((link) => router.prefetch(link.href));
+    router.prefetch("/cart");
+  }, [router]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -43,8 +58,12 @@ export function Navbar() {
     <header
       // Stays put while pages change underneath it (see the site-header view transition in globals.css)
       style={{ viewTransitionName: "site-header" }}
-      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
-        solid ? "bg-ink-950/85 shadow-[0_1px_0_0_rgba(255,255,255,0.06)] backdrop-blur-md" : "bg-transparent"
+      // No backdrop blur on phones: re-blurring the page under the bar on every scrolled frame is what makes mobile
+      // scrolling stutter, so small screens get a near-solid bar instead.
+      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow] duration-500 ${
+        solid
+          ? `${menuOpen ? "bg-ink-950" : "bg-ink-950/95"} shadow-[0_1px_0_0_rgba(255,255,255,0.06)] lg:bg-ink-950/85 lg:backdrop-blur-md`
+          : "bg-transparent"
       }`}
     >
       <Container className="flex h-20 items-center justify-between lg:h-24">
@@ -99,15 +118,15 @@ export function Navbar() {
         </div>
       </Container>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — drops over the page with opacity and transform only, so opening and closing stay on the GPU */}
       <div
         id="mobile-menu"
         inert={!menuOpen}
-        className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-400 lg:hidden ${
-          menuOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        className={`absolute inset-x-0 top-full bg-ink-950 shadow-[0_24px_48px_-24px_rgba(0,0,0,0.8)] transition-[opacity,transform,visibility] duration-300 ease-out lg:hidden ${
+          menuOpen ? "visible translate-y-0 opacity-100" : "invisible -translate-y-3 opacity-0"
         }`}
       >
-        <nav aria-label="Mobile" className="min-h-0">
+        <nav aria-label="Mobile">
           <Container className="border-t border-ink-600/60 py-4">
             <ul>
               {navLinks.map((link) => {

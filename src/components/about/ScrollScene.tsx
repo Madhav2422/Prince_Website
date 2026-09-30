@@ -10,26 +10,40 @@ type ScrollSceneProps = ComponentPropsWithoutRef<"section"> & {
   mode?: "pin" | "pass";
   /** When set, `data-step` holds the current step (0 … steps − 1) so CSS can switch states. */
   steps?: number;
+  /**
+   * Selector for the elements that read `--progress`. Setting it on just those (rather than the whole section) keeps
+   * each scrolled frame to a restyle of a few elements instead of everything inside the section.
+   */
+  progressTarget?: string;
 };
 
 /** Exposes how far the section has scrolled as the CSS variable `--progress` (0 → 1). */
-export function ScrollScene({ mode = "pin", steps, ...rest }: ScrollSceneProps) {
+export function ScrollScene({ mode = "pin", steps, progressTarget, ...rest }: ScrollSceneProps) {
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
+    const targets = progressTarget ? [...el.querySelectorAll<HTMLElement>(progressTarget)] : [el];
     let frame = 0;
+    let last = "";
     const update = () => {
       frame = 0;
       const rect = el.getBoundingClientRect();
       const screen = window.innerHeight;
       const raw = mode === "pin" ? -rect.top / Math.max(1, rect.height - screen) : (screen - rect.top) / (screen + rect.height);
       const progress = Math.min(1, Math.max(0, raw));
-      // Written straight to the DOM: scrolling never re-renders React.
-      el.style.setProperty("--progress", progress.toFixed(4));
-      if (steps) el.dataset.step = String(Math.min(steps - 1, Math.floor(progress * steps)));
+      // Written straight to the DOM, and only when it changes: scrolling never re-renders React.
+      const value = progress.toFixed(4);
+      if (value !== last) {
+        last = value;
+        targets.forEach((target) => target.style.setProperty("--progress", value));
+      }
+      if (steps) {
+        const step = String(Math.min(steps - 1, Math.floor(progress * steps)));
+        if (el.dataset.step !== step) el.dataset.step = step;
+      }
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -43,7 +57,7 @@ export function ScrollScene({ mode = "pin", steps, ...rest }: ScrollSceneProps) 
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
-  }, [mode, steps]);
+  }, [mode, steps, progressTarget]);
 
   return <section ref={ref} data-step={steps ? 0 : undefined} {...rest} />;
 }

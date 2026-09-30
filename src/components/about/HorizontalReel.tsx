@@ -30,22 +30,33 @@ export function HorizontalReel({ header, children, className = "", labelledBy }:
     }
 
     let frame = 0;
+    let distance = 0;
+    let width = 0;
+    let last = "";
     const measure = () => {
-      const distance = Math.max(0, track.scrollWidth - viewport.clientWidth);
-      section.style.setProperty("--distance", `${distance}px`);
-      section.style.height = `${window.innerHeight + distance}px`;
+      width = window.innerWidth;
+      distance = Math.max(0, track.scrollWidth - viewport.clientWidth);
+      // svh, not innerHeight: on phones innerHeight changes as the address bar slides away, and resizing this tall
+      // section mid-scroll would re-lay out the whole page and make it jump.
+      section.style.height = `calc(100svh + ${distance}px)`;
     };
     const update = () => {
       frame = 0;
       const rect = section.getBoundingClientRect();
       const progress = Math.min(1, Math.max(0, -rect.top / Math.max(1, rect.height - window.innerHeight)));
-      section.style.setProperty("--progress", progress.toFixed(4));
+      // Moves the track directly, so each frame restyles one element rather than the whole section.
+      const x = (-progress * distance).toFixed(1);
+      if (x !== last) {
+        last = x;
+        track.style.transform = `translate3d(${x}px, 0, 0)`;
+      }
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
     const onResize = () => {
-      measure();
+      // Height-only resizes are the phone's address bar showing or hiding — nothing to re-measure.
+      if (window.innerWidth !== width) measure();
       schedule();
     };
 

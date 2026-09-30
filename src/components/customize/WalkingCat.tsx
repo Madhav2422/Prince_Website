@@ -57,6 +57,8 @@ const FIRST_VISIT_S = 2;
 const TURN_S = 1;
 const POSE_S = 2.8;
 
+/** The fur filter, desktop only: at phone size it can't be seen and costs a filter pass every frame. */
+const FUZZ = "lg:[filter:url(#cat-fuzz)]";
 const FUR = "url(#cat-fur)";
 const HEAD_FUR = "url(#cat-head)";
 const TAIL_FUR = "url(#cat-tail)";
@@ -583,7 +585,7 @@ export function WalkingCat() {
         <g data-part="side" strokeLinecap="round">
           {leg(0)}
           {leg(1)}
-          <g data-part="side-body" filter="url(#cat-fuzz)">
+          <g data-part="side-body" className={FUZZ}>
             <g data-part="tail-base" fill={TAIL_FUR}>
               <path d={SIDE_TAIL[0]} />
               <g data-part="tail-tip">
@@ -608,7 +610,7 @@ export function WalkingCat() {
 
         {/* Front view — seen while it turns towards you */}
         <g data-part="front" strokeLinecap="round" style={{ opacity: 0 }}>
-          <g filter="url(#cat-fuzz)">
+          <g className={FUZZ}>
             <g data-part="front-tail" fill={TAIL_FUR}>
               <path d={FRONT_TAIL[0]} />
               <path d={FRONT_TAIL[1]} />
@@ -625,7 +627,7 @@ export function WalkingCat() {
               <ellipse cx={11 * sideSign} cy="129.4" rx="3.3" ry="2.3" fill={FAR_WHITE} />
             </g>
           ))}
-          <g filter="url(#cat-fuzz)">
+          <g className={FUZZ}>
             {/* Neck, seen when the head turns aside */}
             <ellipse cy="82" rx="7.5" ry="8" fill={FUR} />
             <ellipse cy="97" rx="11" ry="14.5" fill={FUR} />
@@ -643,7 +645,7 @@ export function WalkingCat() {
         {/* Head — every feature is placed each frame by turnHead() */}
         <g data-part="head">
           <ellipse data-part="head-shadow" cy="7" rx="12" ry="9.5" fill="url(#cat-shadow)" />
-          <g filter="url(#cat-fuzz)">
+          <g className={FUZZ}>
             <g data-part="ears" fill={HEAD_FUR}>
               {[0, 1].map((i) => (
                 <g key={i} data-part={`ear-${i}`}>

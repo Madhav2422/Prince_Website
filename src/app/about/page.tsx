@@ -104,13 +104,14 @@ export default function AboutPage() {
       </section>
 
       {/* 2 · Manifesto — lights up word by word as you scroll */}
-      <ScrollScene aria-labelledby="about-belief" className="relative h-[220vh] bg-ink-900">
+      <ScrollScene aria-labelledby="about-belief" progressTarget="[data-words]" className="relative h-[220vh] bg-ink-900">
         <div className="sticky top-0 flex h-svh items-center">
           <Container>
             <p id="about-belief" className={eyebrow}>
               What we believe
             </p>
             <p
+              data-words
               className="mt-8 max-w-5xl font-serif text-[clamp(1.85rem,4.2vw,3.6rem)] font-medium leading-[1.22] text-cream"
               style={{ "--n": words.length } as CSSProperties}
             >
@@ -129,7 +130,12 @@ export default function AboutPage() {
       </ScrollScene>
 
       {/* 3 · Our story */}
-      <ScrollScene mode="pass" aria-labelledby="about-story" className="relative overflow-hidden bg-ink-950">
+      <ScrollScene
+        mode="pass"
+        aria-labelledby="about-story"
+        progressTarget=".about-parallax"
+        className="relative overflow-hidden bg-ink-950"
+      >
         <Container className="grid items-center gap-14 py-24 lg:grid-cols-2 lg:gap-20 lg:py-32">
           <Reveal variant="scale" className="relative">
             <div className="relative aspect-[4/3] overflow-hidden border border-ink-700">
@@ -217,7 +223,12 @@ export default function AboutPage() {
       </section>
 
       {/* 5 · Anatomy of a scent — the pyramid builds act by act */}
-      <ScrollScene steps={3} aria-labelledby="about-acts" className="relative h-[300vh] bg-ink-950">
+      <ScrollScene
+        steps={3}
+        aria-labelledby="about-acts"
+        progressTarget=".about-progress"
+        className="relative h-[300vh] bg-ink-950"
+      >
         <div className="sticky top-0 flex h-svh items-center overflow-hidden pt-16">
           <div
             aria-hidden
