@@ -39,9 +39,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${montserrat.variable} ${cormorant.variable} ${parisienne.variable}`}>
       <body className="min-h-svh">
         <Navbar />
-        {/* The footer moves with the page, so the whole page crossfades as one */}
+        {/* The footer moves with the page, so the whole page transitions as one. overflow-x-clip: nothing may widen
+            the page sideways (e.g. a block waiting to slide in from the right) — on phones that zooms the page out
+            and aborts any page transition in progress. Unlike overflow-hidden, clip keeps position: sticky working. */}
         <PageTransition>
-          <div>
+          <div className="overflow-x-clip">
             <main>{children}</main>
             <Footer />
           </div>

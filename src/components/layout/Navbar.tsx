@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, Search, ShoppingBag, X } from "lucide-react";
+import { Menu, ShoppingBag, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Container } from "@/components/ui/Container";
 import { navLinks } from "@/data/navigation";
@@ -91,9 +91,6 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-1 text-cream sm:gap-3">
-          <button type="button" aria-label="Search" className={iconButton}>
-            <Search className="size-5" strokeWidth={1.75} />
-          </button>
           <Link href="/cart" aria-label={`Cart, ${cartCount} items`} className={`${iconButton} relative text-gold-500`}>
             <ShoppingBag className="size-5" strokeWidth={1.75} />
             <span

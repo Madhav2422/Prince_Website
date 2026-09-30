@@ -796,28 +796,31 @@
   }
 }
 
-/* Page transitions (<PageTransition>): a true crossfade — the old page stays put underneath while the new one
-   fades up over it, so the screen never dips to black in between. The navbar stays anchored above both. */
+/* Page transitions (<PageTransition>): a quick "fade through" — the old page fades out fast and the new one starts
+   rising in just before it's gone, so the two never sit on top of each other and there's no dark gap between them.
+   The navbar stays anchored above both. */
 ::view-transition {
   pointer-events: none; /* clicks during the fade reach the new page */
 }
 
 ::view-transition-old(.page-exit) {
-  animation: none;
-}
-
-::view-transition-group(.page-enter) {
-  z-index: 1;
+  animation: 150ms cubic-bezier(0.4, 0, 1, 1) both page-out;
 }
 
 ::view-transition-new(.page-enter) {
-  animation: 420ms cubic-bezier(0.22, 1, 0.36, 1) both page-in;
+  animation: 420ms cubic-bezier(0.22, 1, 0.36, 1) 90ms both page-in;
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes page-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px);
   }
 }
 
