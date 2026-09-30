@@ -5,6 +5,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { heroSlides } from "@/data/home";
+import { HOME_HERO_SIZES } from "@/data/pageImages";
 
 const AUTOPLAY_MS = 6500;
 
@@ -44,7 +45,7 @@ export function Hero() {
             aria-hidden={i !== active}
             fill
             priority={i === 0}
-            sizes="(min-width: 1024px) 78vw, 100vw"
+            sizes={HOME_HERO_SIZES}
             style={{ objectPosition: s.image.position }}
             className={`object-cover transition-opacity duration-[1400ms] ease-out ${
               i === active ? "ken-burns opacity-100" : "opacity-0"

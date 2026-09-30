@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Montserrat, Parisienne } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
+import { ImageWarmup } from "@/components/layout/ImageWarmup";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
+import { FIRST_IMAGES } from "@/data/pageImages";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -37,10 +39,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${montserrat.variable} ${cormorant.variable} ${parisienne.variable}`}>
       <body className="min-h-svh">
         <Navbar />
+        {/* The footer moves with the page, so the whole page crossfades as one */}
         <PageTransition>
-          <main>{children}</main>
+          <div>
+            <main>{children}</main>
+            <Footer />
+          </div>
         </PageTransition>
-        <Footer />
+        <ImageWarmup pages={FIRST_IMAGES} />
       </body>
     </html>
   );

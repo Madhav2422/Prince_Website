@@ -3,6 +3,7 @@ import Image from "next/image";
 import { CategoryTabs } from "@/components/shop/CategoryTabs";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { Container } from "@/components/ui/Container";
+import { HERO_SIZES, PAGE_HEROES } from "@/data/pageImages";
 import { byCategory } from "@/data/products";
 
 export const metadata: Metadata = {
@@ -17,11 +18,11 @@ export default function ShopPage() {
     <>
       <section aria-label="Shop" className="relative isolate overflow-hidden bg-ink-950">
         <Image
-          src="/images/About_Us_bg_image.jpg"
+          src={PAGE_HEROES.shop}
           alt=""
           fill
           priority
-          sizes="100vw"
+          sizes={HERO_SIZES}
           className="-z-20 object-cover object-[60%_45%]"
         />
         <div aria-hidden className="absolute inset-0 -z-10 bg-linear-to-r from-ink-950/95 via-ink-950/60 to-ink-950/30" />

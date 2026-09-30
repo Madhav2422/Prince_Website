@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Customizer } from "@/components/customize/Customizer";
 import { Container } from "@/components/ui/Container";
 import { SLOT_COUNT, SLOT_ML, TOTAL_ML } from "@/data/customize";
+import { HERO_SIZES, PAGE_HEROES } from "@/data/pageImages";
 
 export const metadata: Metadata = {
   title: "Customize Your Perfume",
@@ -14,11 +15,11 @@ export default function CustomizePage() {
     <>
       <section aria-label="Customize" className="relative isolate overflow-hidden bg-ink-950">
         <Image
-          src="/images/Hero_image_3.jpg"
+          src={PAGE_HEROES.customize}
           alt=""
           fill
           priority
-          sizes="100vw"
+          sizes={HERO_SIZES}
           className="-z-20 object-cover object-[55%_45%]"
         />
         <div aria-hidden className="absolute inset-0 -z-10 bg-ink-950/82" />

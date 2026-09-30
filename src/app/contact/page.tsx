@@ -6,6 +6,7 @@ import { ContactForm } from "@/components/contact/ContactForm";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { contact } from "@/data/contact";
+import { HERO_SIZES, PAGE_HEROES } from "@/data/pageImages";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -23,11 +24,11 @@ export default function ContactPage() {
     <>
       <section aria-label="Contact" className="relative isolate overflow-hidden bg-ink-950">
         <Image
-          src="/images/About_Us_bg_image.jpg"
+          src={PAGE_HEROES.contact}
           alt=""
           fill
           priority
-          sizes="100vw"
+          sizes={HERO_SIZES}
           className="-z-20 object-cover object-[55%_45%]"
         />
         <div aria-hidden className="absolute inset-0 -z-10 bg-ink-950/80" />

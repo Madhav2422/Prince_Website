@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Heart } from "lucide-react";
+import { PRODUCT_CARD_SIZES } from "@/data/pageImages";
 import { formatPrice, type Product } from "@/data/products";
 import { AddToCartButton } from "./AddToCartButton";
 import { VialArt } from "./VialArt";
@@ -21,7 +22,7 @@ export function ProductCard({ product, tone = "dark" }: { product: Product; tone
             src={product.image}
             alt={product.name}
             fill
-            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            sizes={PRODUCT_CARD_SIZES}
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         ) : (

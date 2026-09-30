@@ -4,6 +4,7 @@ import { MoonStar } from "lucide-react";
 import { AttarCollection } from "@/components/shop/AttarCollection";
 import { CategoryTabs } from "@/components/shop/CategoryTabs";
 import { Container } from "@/components/ui/Container";
+import { HERO_SIZES, PAGE_HEROES } from "@/data/pageImages";
 
 export const metadata: Metadata = {
   title: "Attars",
@@ -18,11 +19,11 @@ export default function AttarsPage() {
         <h1 className="sr-only">Attars — pure oils, real stories</h1>
         <div className="relative mx-auto aspect-[1672/828] max-h-[560px] min-h-[240px] w-full max-w-[1900px] overflow-hidden">
           <Image
-            src="/images/attar-hero.png"
+            src={PAGE_HEROES.attars}
             alt="Attars — simple scents, deeper meanings. Pure oils, real stories."
             fill
             priority
-            sizes="100vw"
+            sizes={HERO_SIZES}
             className="object-cover object-[38%_50%]"
           />
         </div>
