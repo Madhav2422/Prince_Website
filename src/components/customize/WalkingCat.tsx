@@ -213,8 +213,12 @@ export function WalkingCat() {
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    // The bottle only has room for a visitor in the desktop layout.
-    const wide = window.matchMedia("(min-width: 1024px)");
+    // Visits only count down while the bottle is on screen, so you don't miss the first one scrolling down to it.
+    let onScreen = false;
+    const observer = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+    });
+    observer.observe(svg);
 
     const part = (name: string) => svg.querySelector(`[data-part="${name}"]`) as SVGElement;
     const pair = (name: string) => [part(`${name}-0`), part(`${name}-1`)];
@@ -270,7 +274,7 @@ export function WalkingCat() {
     /** Works out where the left edge of the screen is, in bottle units, for this visit. */
     const plan = () => {
       const ctm = svg.getScreenCTM();
-      if (!ctm || !wide.matches) return false;
+      if (!ctm) return false;
       const screenLeft = -ctm.e / ctm.a;
       cx = screenLeft - NOSE_AHEAD * SCALE * BACK_DEPTH - 12;
       exitX = screenLeft - TAIL_BEHIND * SCALE - 12;
@@ -323,6 +327,7 @@ export function WalkingCat() {
       stageT += dt;
 
       if (stage === "away") {
+        if (!onScreen) stageT = 0;
         if (stageT >= waitFor) {
           if (plan()) {
             phase = 0;
@@ -330,7 +335,7 @@ export function WalkingCat() {
             cat.style.visibility = "visible";
             go("enter");
           } else {
-            // Narrow layout or not laid out yet: look again shortly.
+            // Not laid out yet: look again shortly.
             stageT = 0;
             waitFor = 2;
           }
@@ -491,7 +496,10 @@ export function WalkingCat() {
     };
 
     raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+    };
   }, []);
 
   const leg = (i: number) => {
@@ -515,7 +523,7 @@ export function WalkingCat() {
       ref={svgRef}
       viewBox={VIEWBOX}
       aria-hidden
-      className="pointer-events-none absolute inset-0 hidden size-full overflow-visible lg:block"
+      className="pointer-events-none absolute inset-0 size-full overflow-visible"
     >
       <defs>
         {/* White fur, lit from above and shaded warm grey underneath; shared in user space so every body part shades as one */}
