@@ -41,6 +41,8 @@ export function Navbar() {
 
   return (
     <header
+      // Stays put while pages change underneath it (see the site-header view transition in globals.css)
+      style={{ viewTransitionName: "site-header" }}
       className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
         solid ? "bg-ink-950/85 shadow-[0_1px_0_0_rgba(255,255,255,0.06)] backdrop-blur-md" : "bg-transparent"
       }`}

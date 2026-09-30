@@ -22,6 +22,7 @@ import {
   type CapState,
   type Pour,
 } from "./BottleVisual";
+import { WalkingCat } from "./WalkingCat";
 
 const MAX_ENGRAVING = 14;
 /** The cap reseals after this long with no new scent added. */
@@ -138,7 +139,8 @@ export function Customizer() {
       {/* Bottle preview — a compact sticky bar on mobile so the animation stays visible
           while scrolling the scent list, and a tall sticky panel from lg up. */}
       <div className="sticky top-20 z-20 -mx-5 flex items-center gap-3 border-b border-ink-700/60 bg-ink-950/95 px-5 py-3 backdrop-blur-sm sm:gap-5 sm:-mx-8 sm:px-8 lg:top-28 lg:z-auto lg:mx-0 lg:block lg:h-fit lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none">
-        <div className="relative flex h-60 w-45 shrink-0 items-center justify-center sm:h-72 sm:w-60 lg:mx-auto lg:h-[420px] lg:w-full lg:max-w-[340px] xl:h-[480px]">
+        {/* isolate: lets the cat step behind the bottle without dropping behind the page */}
+        <div className="relative isolate flex h-60 w-45 shrink-0 items-center justify-center sm:h-72 sm:w-60 lg:mx-auto lg:h-[420px] lg:w-full lg:max-w-[340px] xl:h-[480px]">
           <BottleVisual
             layers={layers}
             pours={pours}
@@ -146,6 +148,7 @@ export function Customizer() {
             openCount={openCount}
             engraving={engraving.trim()}
           />
+          <WalkingCat />
         </div>
 
         <div className="min-w-0 flex-1 lg:mx-auto lg:mt-6 lg:max-w-[340px] lg:flex-none">

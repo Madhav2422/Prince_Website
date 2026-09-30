@@ -586,6 +586,194 @@
     }
   }
 
+  /* ---------------- About page ---------------- */
+  /* Slow drifting pools of light */
+  .about-aura {
+    position: absolute;
+    border-radius: 9999px;
+    mix-blend-mode: screen;
+    will-change: transform;
+    animation: about-drift var(--dur, 24s) ease-in-out var(--delay, 0s) infinite alternate;
+  }
+  @keyframes about-drift {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(var(--dx), var(--dy)) scale(1.12);
+    }
+    100% {
+      transform: translate(calc(var(--dx) * -0.6), calc(var(--dy) * -0.8)) scale(0.94);
+    }
+  }
+
+  /* Specks of scent rising through the air */
+  .about-mote {
+    position: absolute;
+    bottom: -12px;
+    border-radius: 9999px;
+    background: var(--color-gold-300);
+    box-shadow: 0 0 8px rgb(245 193 48 / 0.8);
+    opacity: 0;
+    animation: about-rise var(--dur) linear var(--delay) infinite;
+  }
+  @keyframes about-rise {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.75;
+    }
+    85% {
+      opacity: 0.35;
+    }
+    100% {
+      transform: translate(var(--drift), -105vh);
+      opacity: 0;
+    }
+  }
+
+  /* A drop of gold sliding down the scroll hint */
+  .about-scroll-cue::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 40%;
+    background: var(--color-gold-500);
+    animation: about-cue 2.2s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+  }
+  @keyframes about-cue {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(250%);
+    }
+  }
+
+  /* Manifesto: each word lights up as the scene scrolls past (--progress is set by <ScrollScene>) */
+  .about-word {
+    opacity: calc(0.14 + 0.86 * clamp(0, var(--progress, 0) * var(--n) * 1.3 - var(--i), 1));
+    transition: opacity 0.2s linear;
+  }
+
+  /* Photo drifting slower than the page */
+  .about-parallax {
+    transform: translateY(calc((var(--progress, 0.5) - 0.5) * -14%)) scale(1.18);
+    will-change: transform;
+  }
+
+  .about-spin {
+    animation: about-spin 24s linear infinite;
+  }
+  @keyframes about-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Notes pyramid: the active act glows, earlier acts stay softly lit */
+  .about-band {
+    opacity: 0;
+    transition: opacity 0.7s ease;
+  }
+  .about-band-label {
+    fill: var(--color-smoke);
+    transition: fill 0.5s ease;
+  }
+  [data-step="0"] [data-band="0"],
+  [data-step="1"] [data-band="1"],
+  [data-step="2"] [data-band="2"] {
+    opacity: 1;
+  }
+  [data-step="1"] [data-band="0"],
+  [data-step="2"] [data-band="0"],
+  [data-step="2"] [data-band="1"] {
+    opacity: 0.3;
+  }
+  [data-step="0"] [data-label="0"],
+  [data-step="1"] [data-label="1"],
+  [data-step="2"] [data-label="2"] {
+    fill: var(--color-ink-950);
+  }
+  .about-note {
+    opacity: 0.28;
+    transform: translateX(0);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .about-note-bar {
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  [data-step="0"] [data-note="0"],
+  [data-step="1"] [data-note="1"],
+  [data-step="2"] [data-note="2"] {
+    opacity: 1;
+    transform: translateX(10px);
+  }
+  [data-step="0"] [data-note="0"] .about-note-bar,
+  [data-step="1"] [data-note="1"] .about-note-bar,
+  [data-step="2"] [data-note="2"] .about-note-bar {
+    transform: scaleY(1);
+  }
+  .about-progress {
+    transform: scaleX(var(--progress, 0));
+    transform-origin: left;
+  }
+
+  /* Wisps of scent leaving the tip of the pyramid */
+  .about-wisp {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: about-wisp 4.6s ease-in-out var(--d, 0s) infinite;
+  }
+  @keyframes about-wisp {
+    0% {
+      stroke-dashoffset: 1;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    30% {
+      opacity: 0.8;
+    }
+    70% {
+      stroke-dashoffset: 0;
+      opacity: 0.45;
+    }
+    100% {
+      stroke-dashoffset: -1;
+      opacity: 0;
+      transform: translateY(-16px);
+    }
+  }
+
+  /* Collection reel: vertical scroll drives the track sideways */
+  .about-reel-track {
+    transform: translate3d(calc(var(--progress, 0) * var(--distance, 0px) * -1), 0, 0);
+    will-change: transform;
+  }
+  [data-static] .about-reel-viewport {
+    overflow-x: auto;
+  }
+
+  /* Soft light that follows the cursor across a card */
+  .about-spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(420px circle at var(--x, 50%) var(--y, 50%), rgb(245 193 48 / 0.14), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .about-spotlight:hover::before {
+    opacity: 1;
+  }
+
   /* Clapperboard stick: held open, then snaps shut once its card has faded in */
   .ss-clap {
     transform-origin: left bottom;
@@ -610,6 +798,46 @@
   }
 }
 
+/* Page transitions (<PageTransition>): the old page fades out quickly, the new one rises gently into place,
+   and the navbar stays anchored above both. */
+::view-transition {
+  pointer-events: none; /* clicks during the fade reach the new page */
+}
+
+::view-transition-old(.page-exit) {
+  animation: 180ms cubic-bezier(0.4, 0, 1, 1) both page-out;
+}
+
+::view-transition-new(.page-enter) {
+  animation: 460ms cubic-bezier(0.22, 1, 0.36, 1) 110ms both page-in;
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   ::before,
@@ -617,5 +845,11 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
