@@ -465,6 +465,139 @@
     }
   }
 
+  /* Home teaser bottle: the cap comes off and the pump under it sprays mist straight out of the page at you
+     (<TeaserBottle>, <SprayPump>, <SprayMist>). */
+  .teaser-bottle {
+    /* One bottle unit, in px: the bottle's 510-unit-tall drawing fills the height of this box. The mist is sized
+       and placed in the same units, so it always lines up with the nozzle. */
+    --u: calc(380px / 510);
+    height: calc(510 * var(--u));
+  }
+  @media (min-width: 640px) {
+    .teaser-bottle {
+      --u: calc(440px / 510);
+    }
+  }
+  /* The teaser takes its time — a slower unscrew and re-seal than the Customize page's working bottle. */
+  .teaser-bottle .cz-cap-open {
+    animation-duration: 1300ms, 3.2s;
+    animation-delay: 0ms, 1300ms;
+  }
+  .teaser-bottle .cz-cap-close {
+    animation-duration: 1500ms;
+  }
+  .teaser-bottle .cz-gleam {
+    animation-delay: 1450ms;
+  }
+  .sp-press {
+    animation: sp-press 800ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  @keyframes sp-press {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    22%,
+    55% {
+      transform: translateY(5px);
+    }
+  }
+
+  /* The burst is anchored on the nozzle and comes towards you: every cloud and droplet starts as a point there and
+     swells outwards in all directions, the way things do as they fly at the eye. */
+  .sp-mist {
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none; /* never blocks the page under it */
+    /* The unit the burst is drawn in: the bottle's own unit on phones, a third larger on big screens, where there
+       is far more screen for the spray to land on. */
+    --s: var(--u);
+  }
+  @media (min-width: 1024px) {
+    .sp-mist {
+      --s: calc(var(--u) * 1.35);
+    }
+  }
+  .sp-puff,
+  .sp-drop {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: calc(var(--s) * var(--size));
+    height: calc(var(--s) * var(--size));
+    margin: calc(var(--s) * var(--size) / -2) 0 0 calc(var(--s) * var(--size) / -2);
+    border-radius: 9999px;
+    opacity: 0;
+  }
+  .sp-puff {
+    /* A broad, even cloud rather than a bright core: a hot centre reads as a light, not as mist */
+    background: radial-gradient(
+      closest-side,
+      rgb(255 244 214 / 0.85) 0%,
+      rgb(249 226 166 / 0.6) 38%,
+      rgb(245 204 96 / 0.22) 70%,
+      rgb(245 193 48 / 0) 100%
+    );
+    animation: sp-puff var(--dur) cubic-bezier(0.16, 0.8, 0.3, 1) var(--d) both;
+  }
+  @keyframes sp-puff {
+    0% {
+      transform: translate(0, 0) scale(0.04);
+      opacity: 0;
+    }
+    14% {
+      opacity: var(--peak);
+    }
+    55% {
+      transform: translate(calc(var(--s) * var(--x)), calc(var(--s) * var(--y))) scale(1);
+      opacity: calc(var(--peak) * 0.75);
+    }
+    100% {
+      transform: translate(calc(var(--s) * var(--x)), calc(var(--s) * var(--y))) scale(1.1);
+      opacity: 0;
+    }
+  }
+  /* A droplet flies out, lands on the glass, sits there a moment, then slips a little and dries */
+  .sp-drop {
+    --slip: 8;
+    background: radial-gradient(circle at 35% 30%, #fff 0%, var(--tint) 50%, rgb(245 193 48 / 0.5) 100%);
+    animation: sp-drop var(--dur) cubic-bezier(0.12, 0.7, 0.25, 1) var(--d) both;
+  }
+  /* The bigger beads are clear, like water on glass: a bright glint, a see-through body and a fine rim */
+  .sp-bead {
+    --slip: 22;
+    background: radial-gradient(
+      circle at 34% 28%,
+      rgb(255 255 255 / 0.95) 0 14%,
+      rgb(255 255 255 / 0.2) 34%,
+      rgb(245 214 128 / 0.16) 72%,
+      rgb(255 255 255 / 0.34) 100%
+    );
+    box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.4);
+  }
+  @keyframes sp-drop {
+    0% {
+      transform: translate(0, 0) scale(0.25);
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    55% {
+      transform: translate(calc(var(--s) * var(--x)), calc(var(--s) * var(--y))) scale(1);
+      opacity: 0.9;
+    }
+    80% {
+      transform: translate(calc(var(--s) * var(--x)), calc(var(--s) * var(--y))) scale(1);
+      opacity: 0.75;
+    }
+    100% {
+      transform: translate(calc(var(--s) * var(--x)), calc(var(--s) * var(--y) + var(--s) * var(--slip))) scale(0.9);
+      opacity: 0;
+    }
+  }
+
   /* Gold underline that draws itself in */
   .reveal-line {
     transform-origin: left;

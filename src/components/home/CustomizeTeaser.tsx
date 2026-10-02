@@ -12,7 +12,9 @@ const steps = [
 
 export function CustomizeTeaser() {
   return (
-    <section aria-labelledby="customize-teaser-heading" className="relative isolate overflow-hidden bg-ink-950">
+    // The bottle's spray comes out in front of the page, so it may drift past the top and bottom of this section:
+    // overflow-x-clip (not overflow-hidden) lets it, and z-10 keeps it in front of the sections above and below.
+    <section aria-labelledby="customize-teaser-heading" className="relative isolate z-10 overflow-x-clip bg-ink-950">
       {/* Warm glow behind the bottle */}
       <div
         aria-hidden

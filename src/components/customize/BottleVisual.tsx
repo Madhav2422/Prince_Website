@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { getScent, SLOT_COUNT } from "@/data/customize";
 
 /** Timings shared with the Customizer so it can queue pours and schedule the cap. Keep in sync with globals.css. */
@@ -45,6 +45,8 @@ type BottleVisualProps = {
   /** Bumps every time the cap opens, so the aroma wisps replay. */
   openCount: number;
   engraving: string;
+  /** Extra SVG, in bottle coordinates, drawn just under the cap — so it is only seen once the cap has lifted. */
+  children?: ReactNode;
 };
 
 export function BottleVisual({
@@ -53,6 +55,7 @@ export function BottleVisual({
   cap,
   openCount,
   engraving,
+  children,
 }: BottleVisualProps) {
   const isOpen = cap === "open";
 
@@ -473,6 +476,8 @@ export function BottleVisual({
           ))}
         </g>
       )}
+
+      {children}
 
       {/* Cap — last, so it floats above everything when lifted */}
       <g
