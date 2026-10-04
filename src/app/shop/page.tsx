@@ -5,11 +5,13 @@ import { ProductGrid } from "@/components/shop/ProductGrid";
 import { Container } from "@/components/ui/Container";
 import { HERO_SIZES, PAGE_HEROES } from "@/data/pageImages";
 import { byCategory } from "@/data/products";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Shop",
   description: "Explore the full Soulful Smell collection — long-lasting eau de parfums for every mood and moment.",
-};
+  path: "/shop",
+});
 
 const sideText = "text-[11px] font-medium uppercase leading-[2.2] tracking-[0.3em] text-mist";
 

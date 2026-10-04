@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { CartView } from "@/components/cart/CartView";
 import { Container } from "@/components/ui/Container";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Cart",
   description: "Review your Soulful Smell order before sending it to us on WhatsApp.",
-};
+  path: "/cart",
+});
 
 export default function CartPage() {
   return (

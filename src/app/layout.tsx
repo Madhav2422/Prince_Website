@@ -5,6 +5,7 @@ import { ImageWarmup } from "@/components/layout/ImageWarmup";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { FIRST_IMAGES } from "@/data/pageImages";
+import { SHARE_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -26,12 +27,23 @@ const parisienne = Parisienne({
 });
 
 export const metadata: Metadata = {
+  // Lets pages give relative URLs for the tags that need absolute ones (canonical, og:url, og:image)
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Soulful Smell — Fragrances That Stay",
-    template: "%s | Soulful Smell",
+    default: SITE_TITLE,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Soulful Smell brings you a world of timeless fragrances crafted for every mood, every moment and every you.",
+  description: SITE_DESCRIPTION,
+  // Fallback link preview for any page that doesn't set its own with pageMetadata()
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "en_IN",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [SHARE_IMAGE],
+  },
+  twitter: { card: "summary_large_image", title: SITE_TITLE, description: SITE_DESCRIPTION, images: [SHARE_IMAGE] },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -15,12 +15,14 @@ import { Reveal } from "@/components/ui/Reveal";
 import { scents, SLOT_COUNT, TOTAL_ML } from "@/data/customize";
 import { byCategory, getProduct, type Product } from "@/data/products";
 import { SCREENS_PATH } from "@/data/soulfulScreens";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About Us",
   description:
     "Soulful Smell makes fragrances that carry memories — long-lasting eau de parfums, attars and bottles you blend yourself. It's not about the smell, it's about the aura.",
-};
+  path: "/about",
+});
 
 const eyebrow = "text-xs font-medium uppercase tracking-[0.4em] text-gold-500";
 const heading = "font-serif text-[clamp(2.5rem,5vw,4.25rem)] font-semibold uppercase leading-[0.98] text-cream";

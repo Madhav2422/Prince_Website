@@ -9,6 +9,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { contact } from "@/data/contact";
+import { pageMetadata } from "@/lib/seo";
 import {
   screensProcess,
   screensReel,
@@ -17,11 +18,12 @@ import {
   screensWhatsApp,
 } from "@/data/soulfulScreens";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "SoulfulScreens",
   description:
     "SoulfulScreens is the media house from the makers of Soulful Smell — films, ad films, music videos, reels and photography.",
-};
+  path: "/soulful-screens",
+});
 
 const eyebrow = "text-xs font-medium uppercase tracking-[0.4em] text-gold-500";
 const heading = "mt-4 font-serif text-[clamp(2.5rem,5vw,4rem)] font-semibold uppercase leading-[0.98] text-cream";

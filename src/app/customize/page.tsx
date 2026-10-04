@@ -4,11 +4,13 @@ import { Customizer } from "@/components/customize/Customizer";
 import { Container } from "@/components/ui/Container";
 import { SLOT_COUNT, SLOT_ML, TOTAL_ML } from "@/data/customize";
 import { HERO_SIZES, PAGE_HEROES } from "@/data/pageImages";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Customize Your Perfume",
   description: `Build your own ${TOTAL_ML} ml Soulful Smell bottle from ${SLOT_COUNT} layers of ${SLOT_ML} ml, engraved with your name.`,
-};
+  path: "/customize",
+});
 
 export default function CustomizePage() {
   return (

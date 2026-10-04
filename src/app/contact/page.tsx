@@ -7,11 +7,13 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { contact } from "@/data/contact";
 import { HERO_SIZES, PAGE_HEROES } from "@/data/pageImages";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact",
   description: "Get in touch with Soulful Smell — call, email or message us about our fragrances.",
-};
+  path: "/contact",
+});
 
 const details = [
   { icon: Mail, label: "Email", value: contact.email, href: `mailto:${contact.email}` },

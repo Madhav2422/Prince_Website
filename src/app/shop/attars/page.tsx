@@ -5,11 +5,13 @@ import { AttarCollection } from "@/components/shop/AttarCollection";
 import { CategoryTabs } from "@/components/shop/CategoryTabs";
 import { Container } from "@/components/ui/Container";
 import { HERO_SIZES, PAGE_HEROES } from "@/data/pageImages";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Attars",
   description: "Pure oils, real stories — traditional Soulful Smell attars for a calmer you.",
-};
+  path: "/shop/attars",
+});
 
 export default function AttarsPage() {
   return (

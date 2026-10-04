@@ -1,4 +1,4 @@
-import { Heart, Leaf, ShieldCheck, Truck, type LucideIcon } from "lucide-react";
+import { Heart, Leaf, MessageCircle, Truck, type LucideIcon } from "lucide-react";
 
 export type HeroSlide = {
   eyebrow: string;
@@ -62,6 +62,7 @@ export type Feature = {
 export const features: Feature[] = [
   { icon: Leaf, title: "Premium Quality", text: "Finest Ingredients" },
   { icon: Truck, title: "Fast & Reliable", text: "Pan India Shipping" },
-  { icon: ShieldCheck, title: "Secure Payments", text: "100% Safe & Trusted" },
+  // Orders are placed over WhatsApp (see the cart) — there is no online payment, so don't promise one here.
+  { icon: MessageCircle, title: "Easy Ordering", text: "Order Directly on WhatsApp" },
   { icon: Heart, title: "Made With Passion", text: "For Fragrance Lovers" },
 ];
