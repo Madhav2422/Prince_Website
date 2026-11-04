@@ -913,6 +913,91 @@
   .reveal:not(.is-visible) .ss-clap {
     transform: rotate(-16deg);
   }
+
+  /* ---------------- Contact form: "message sent" confirmation ---------------- */
+  .cf-panel {
+    animation: cf-panel-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .cf-panel.is-leaving {
+    animation: cf-panel-out 0.45s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+  @keyframes cf-panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.97);
+    }
+  }
+  @keyframes cf-panel-out {
+    to {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.98);
+    }
+  }
+
+  /* Ring then tick draw themselves (dash lengths match the SVG path lengths) */
+  .cf-ring {
+    stroke-dasharray: 164;
+    stroke-dashoffset: 164;
+    animation: cf-draw 0.8s cubic-bezier(0.65, 0, 0.35, 1) 0.2s forwards;
+  }
+  .cf-check {
+    stroke-dasharray: 34;
+    stroke-dashoffset: 34;
+    animation: cf-draw 0.45s cubic-bezier(0.65, 0, 0.35, 1) 0.85s forwards;
+  }
+  @keyframes cf-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Expanding ring that keeps pulsing out from the seal */
+  .cf-halo {
+    opacity: 0;
+    animation: cf-halo 2.2s ease-out 0.9s infinite;
+  }
+  @keyframes cf-halo {
+    from {
+      opacity: 0.6;
+      transform: scale(0.85);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.9);
+    }
+  }
+
+  /* Gold sparks burst outward to --dx / --dy */
+  .cf-spark {
+    animation: cf-spark 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.9s both;
+  }
+  @keyframes cf-spark {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0);
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy)) scale(1);
+    }
+  }
+
+  /* Countdown line; duration is set inline to match the auto-dismiss timer */
+  .cf-timer {
+    transform-origin: left;
+    animation: cf-timer 5s linear both;
+  }
+  @keyframes cf-timer {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0);
+    }
+  }
 }
 
 @layer base {

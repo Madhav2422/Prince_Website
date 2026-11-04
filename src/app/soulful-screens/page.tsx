@@ -130,7 +130,14 @@ export default function SoulfulScreensPage() {
                 as="li"
                 key={title}
                 delay={(i % 3) * 0.1}
-                className="group relative overflow-hidden border border-ink-700 bg-ink-900/60 p-7 transition-colors duration-500 hover:border-gold-500/50 sm:p-8"
+                className={`group relative overflow-hidden border border-ink-700 bg-ink-900/60 p-7 transition-colors duration-500 hover:border-gold-500/50 sm:p-8 ${
+                  // A card left on its own in the last row stretches across it, so the grid never ends with a gap.
+                  i === screensServices.length - 1
+                    ? `${screensServices.length % 2 === 1 ? "sm:col-span-2" : ""} ${
+                        screensServices.length % 3 === 1 ? "lg:col-span-3" : "lg:col-span-1"
+                      }`
+                    : ""
+                }`}
               >
                 <div className="flex items-start justify-between">
                   <Icon
@@ -141,7 +148,7 @@ export default function SoulfulScreensPage() {
                   <span className="font-serif text-lg text-ink-500">{String(i + 1).padStart(2, "0")}</span>
                 </div>
                 <h3 className="mt-7 text-sm font-semibold uppercase tracking-[0.25em] text-cream">{title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-smoke">{text}</p>
+                <p className="mt-3 max-w-xl text-sm leading-relaxed text-smoke">{text}</p>
                 <span
                   aria-hidden
                   className="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-gold-500 transition-transform duration-500 group-hover:scale-x-100"

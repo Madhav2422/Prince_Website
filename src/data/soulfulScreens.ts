@@ -1,4 +1,4 @@
-import { Camera, Clapperboard, Music, Scissors, Smartphone, Tv, type LucideIcon } from "lucide-react";
+import { BookHeart, Camera, Clapperboard, Music, Scissors, Smartphone, Tv, type LucideIcon } from "lucide-react";
 import { contact } from "./contact";
 
 export const SCREENS_PATH = "/soulful-screens";
@@ -48,6 +48,11 @@ export const screensServices: ScreensService[] = [
     icon: Scissors,
     title: "Post-Production",
     text: "Editing, colour grading and sound that give every frame its finish.",
+  },
+  {
+    icon: BookHeart,
+    title: "Wedding Albums",
+    text: "Candid, cinematic wedding photography, designed and bound into a premium album you'll open for years.",
   },
 ];
 

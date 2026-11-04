@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
+import { NavCat } from "@/components/layout/NavCat";
 import { Container } from "@/components/ui/Container";
 import { navLinks } from "@/data/navigation";
 import { useCart } from "@/lib/cart";
@@ -67,7 +68,11 @@ export function Navbar() {
       }`}
     >
       <Container className="flex h-20 items-center justify-between lg:h-24">
-        <Logo className="ml-2 mt-2 sm:ml-4 lg:ml-8 lg:mt-3" />
+        {/* The cat sits just right of the logo; it's absolutely placed, so the bar's layout is unchanged */}
+        <div className="relative ml-2 mt-2 flex sm:ml-4 lg:ml-8 lg:mt-3">
+          <Logo />
+          <NavCat />
+        </div>
 
         <nav aria-label="Primary" className="hidden lg:block">
           <ul className="flex items-center gap-10 xl:gap-12">
