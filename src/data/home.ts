@@ -44,7 +44,7 @@ export const heroSlides: HeroSlide[] = [
     title: ["Find Your", "Scent"],
     description:
       "From deep oud to soft white musk — discover the signature that tells your story before you say a word.",
-    cta: { label: "Collections", href: "/collections" },
+    cta: { label: "Collections", href: "/shop" },
     image: {
       src: "/images/Hero_image_3.jpg",
       alt: "Soulful Smell bottle on dark stone beside oud wood chips and rising smoke",
